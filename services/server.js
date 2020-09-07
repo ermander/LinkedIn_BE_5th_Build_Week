@@ -32,10 +32,10 @@ server.use(genericErrorHandler);
 
 console.log(listEndpoints(server));
 
-const url =
-  "mongodb+srv://natman:feet@cluster0.z2kek.mongodb.net/Cluster0?retryWrites=true&w=majority";
+
+const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING
 mongoose
-  .connect(url, {
+  .connect(MONGO_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
