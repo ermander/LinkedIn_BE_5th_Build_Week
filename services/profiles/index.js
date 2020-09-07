@@ -1,6 +1,6 @@
 const express = require("express");
 const ProfilesSchema = require("./schema");
-const ExperienceSchema = require("../experience/schema")
+const ExperienceSchema = require("../experience/schema");
 const profilesRouter = express.Router();
 const experienceModel = require("../experience/schema");
 const multer = require("multer");
@@ -8,8 +8,6 @@ const fs = require("fs-extra");
 const path = require("path");
 const upload = multer({});
 const PDFDocument = require("pdfkit");
-const pump = require("pump");
-const axios = require("axios");
 
 // Get all profiles
 profilesRouter.get("/", async (req, res, next) => {
@@ -117,9 +115,11 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
     const id = req.params.id;
     const profile = await ProfilesSchema.findById(id);
     // Getting user experiences
-    const experience = await ExperienceSchema.find({username: profile.username})
-    
-    console.log(profile.image)
+    const experience = await ExperienceSchema.find({
+      username: profile.username,
+    });
+
+    console.log(profile.image);
 
     res.setHeader(
       "Content-Disposition",
@@ -129,9 +129,9 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
     function example() {
       var doc = new PDFDocument();
 
-      doc.image(profile.image, 15, 15, {width: 250, height: 270})
-      doc.text("PERSONAL INFORMATIONS", 350, 20)
-      doc.text("JOB EXPERIENCES", 230, 325 )
+      doc.image(profile.image, 15, 15, { width: 250, height: 270 });
+      doc.text("PERSONAL INFORMATIONS", 350, 20);
+      doc.text("JOB EXPERIENCES", 230, 325);
 
       // Rows for the user infos
       row(doc, 40);
@@ -141,12 +141,12 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
       row(doc, 120);
 
       // Rows for the user experiences
-      row(doc, 210) // Role
-      row(doc, 230) // Company
-      row(doc, 250) // Start Date
-      row(doc, 270) // End Date
-      row(doc, 290) // Description
-      row(doc, 310) // Area
+      row(doc, 210); // Role
+      row(doc, 230); // Company
+      row(doc, 250); // Start Date
+      row(doc, 270); // End Date
+      row(doc, 290); // Description
+      row(doc, 310); // Area
 
       // Content of user infos
       textInRowFirst(doc, "Name:", 40);
@@ -157,7 +157,6 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
       textInRowFirst(doc, "Phone Number:", 140);
       textInRowFirst(doc, "Nationality:", 160);
 
-
       textInRowSecond(doc, profile.name, 40);
       textInRowSecond(doc, profile.surname, 60);
       textInRowSecond(doc, profile.email, 80);
@@ -166,31 +165,46 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
       textInRowSecond(doc, "3504588976", 140);
       textInRowSecond(doc, "German", 160);
 
+      const exLineHeight = 345;
+      const addSpace = 160;
+      const jForLenght = experience.length;
 
-      const exLineHeight = 345
-      const addSpace = 160
-      const jForLenght = experience.length
-
-      for(let j=0; j<jForLenght; j++){
-        let LineHeight = exLineHeight
-        for(let i=0; i<2; i++){  
+      for (let j = 0; j < jForLenght; j++) {
+        let LineHeight = exLineHeight;
+        for (let i = 0; i < 2; i++) {
           // Content of user experiences
-        
-        textInRowFirstExperiences(doc, "Role:", LineHeight); //345
-        textInRowFirstExperiences(doc, "Company", LineHeight+20); //365
-        textInRowFirstExperiences(doc, "Start Date", LineHeight+40); // 385
-        textInRowFirstExperiences(doc, "End Date", LineHeight+60); // 405
-        textInRowFirstExperiences(doc, "Description", LineHeight+80); // 425
-        textInRowFirstExperiences(doc, "Area", LineHeight+100); // 445
-  
-        textInRowSecondExperiences(doc, experience[i].role, LineHeight); //345
-        textInRowSecondExperiences(doc, experience[i].company, LineHeight+20); //365
-        textInRowSecondExperiences(doc, experience[i].startDate, LineHeight+40); // 385
-        textInRowSecondExperiences(doc, experience[i].endDate, LineHeight+60); // 405
-        textInRowSecondExperiences(doc, experience[i].description, LineHeight+80); // 425
-        textInRowSecondExperiences(doc, experience[i].area, LineHeight+100); // 445  
-        
-        LineHeight = exLineHeight + (addSpace * (i+1))  
+
+          textInRowFirstExperiences(doc, "Role:", LineHeight); //345
+          textInRowFirstExperiences(doc, "Company", LineHeight + 20); //365
+          textInRowFirstExperiences(doc, "Start Date", LineHeight + 40); // 385
+          textInRowFirstExperiences(doc, "End Date", LineHeight + 60); // 405
+          textInRowFirstExperiences(doc, "Description", LineHeight + 80); // 425
+          textInRowFirstExperiences(doc, "Area", LineHeight + 100); // 445
+
+          textInRowSecondExperiences(doc, experience[i].role, LineHeight); //345
+          textInRowSecondExperiences(
+            doc,
+            experience[i].company,
+            LineHeight + 20
+          ); //365
+          textInRowSecondExperiences(
+            doc,
+            experience[i].startDate,
+            LineHeight + 40
+          ); // 385
+          textInRowSecondExperiences(
+            doc,
+            experience[i].endDate,
+            LineHeight + 60
+          ); // 405
+          textInRowSecondExperiences(
+            doc,
+            experience[i].description,
+            LineHeight + 80
+          ); // 425
+          textInRowSecondExperiences(doc, experience[i].area, LineHeight + 100); // 445
+
+          LineHeight = exLineHeight + addSpace * (i + 1);
         }
       }
       doc.pipe(res);
@@ -203,7 +217,6 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
       });
     }
 
-      
     // Function for user infos
     function textInRowFirst(doc, text, heigth) {
       doc.y = heigth;
@@ -258,10 +271,10 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
       return doc;
     }
 
-     function row(doc, heigth) {
+    function row(doc, heigth) {
       doc.lineJoin("miter").rect(30, heigth, 500, 20);
       return doc;
-    } 
+    }
 
     example();
   } catch (error) {
@@ -269,7 +282,6 @@ profilesRouter.get("/:id/profilePDF", async (req, res, next) => {
     next("While reading profiles list a problem occurred!");
   }
 });
-
 
 // Modifie a profile
 profilesRouter.put("/:id", async (req, res, next) => {
