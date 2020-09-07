@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const postsRoutes = require("./posts");
 const experienceRoute = require("./experience");
 const commentRoutes = require("./comments");
+const loginRouter = require("./registration");
 
 const server = express();
 const listEndpoints = require("express-list-endpoints");
@@ -25,6 +26,7 @@ server.use("/posts", postsRoutes);
 server.use("/profile", experienceRoute);
 server.use("/profile", profilesRouter);
 server.use("/comments", commentRoutes);
+server.use("/login", loginRouter);
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);
