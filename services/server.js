@@ -5,8 +5,33 @@ const dotenv = require("dotenv");
 const postsRoutes = require("./posts");
 const experienceRoute = require("./experience");
 const commentRoutes = require("./comments");
+const http = require("http")
+const socketio = require("socket.io")
 
+// Express server
 const server = express();
+
+// http server starting from express server
+const httpServer = http.createServer(server)
+
+// sockeio server
+const io = socketio(httpServer)
+
+// waiting for a connection
+io.on("connection", (socket) => {
+  console.log(`New connection arrived: `, socket.id)   
+
+  // Send messages to private users
+  socket.on("privateMessage", async (options) => {
+    io.to(options.to).emit("message", {
+      from: options.username,
+      to: options.to,
+      text: options.text
+    })
+  })
+
+})
+
 const listEndpoints = require("express-list-endpoints");
 const profilesRouter = require("./profiles/index");
 const {
@@ -40,7 +65,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(
-    server.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log(`working on port ${port}`);
     })
   );
