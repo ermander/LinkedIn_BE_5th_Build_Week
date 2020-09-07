@@ -32,10 +32,9 @@ server.use(genericErrorHandler);
 
 console.log(listEndpoints(server));
 
-const url =
-  "mongodb+srv://natman:feet@cluster0.z2kek.mongodb.net/Cluster0?retryWrites=true&w=majority";
+
 mongoose
-  .connect(url, {
+  .connect(process.env.MONGO_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -47,3 +46,5 @@ mongoose
 mongoose.connection.on("connected", () => {
   console.log("connected to atlas");
 });
+
+
