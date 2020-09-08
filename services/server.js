@@ -17,7 +17,7 @@ const httpServer = http.createServer(server)
 // sockeio server
 const io = socketio(httpServer)
 
-// waiting for a connection
+// Waiting for a connection
 io.on("connection", (socket) => {
   console.log(`New connection arrived: `, socket.id)   
 
