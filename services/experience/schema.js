@@ -24,9 +24,6 @@ const ExperienceSchema = new Schema(
     area: {
       type: String,
     },
-    username: {
-      type: String,
-    },
     image: {
       type: Buffer,
     },
