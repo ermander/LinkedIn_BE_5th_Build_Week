@@ -10,11 +10,6 @@ const ProfilesSchema = new Schema(
       type: String,
       required: true,
     },
-    email: {
-      type: String,
-      required: true,
-      lowercase: true,
-    },
     bio: {
       type: String,
     },
@@ -24,10 +19,6 @@ const ProfilesSchema = new Schema(
     },
     image: {
       type: Buffer,
-    },
-    username: {
-      type: String,
-      required: true,
     },
   },
   { timestamps: true }

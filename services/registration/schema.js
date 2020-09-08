@@ -2,18 +2,17 @@ const { Schema } = require("mongoose");
 const mongoose = require("mongoose");
 const brcrypt = require("bcryptjs");
 const v = require("validator");
+const Experience = require("../experience/schema");
+const Profile = require("../profiles/schema");
 
 const RegistrationSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-
-    lastName: {
-      type: String,
-      required: true,
-    },
+    profile: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Profile,
+      },
+    ],
 
     email: {
       type: String,
@@ -50,6 +49,14 @@ const RegistrationSchema = new Schema(
         }
       },
     },
+
+    experiences: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Experience,
+      },
+    ],
+
     refreshTokens: [
       {
         token: {
@@ -87,7 +94,7 @@ RegistrationSchema.pre("save", async function (next) {
   const user = this;
 
   if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
+    user.password = await brcrypt.hash(user.password, 8);
   }
 
   next();

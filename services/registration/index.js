@@ -1,10 +1,10 @@
 const express = require("express");
 const { authenticate, refreshToken } = require("./authTools");
-
+const { authorize } = require("../middlewares/authorize");
 const RegistrationModel = require("./schema");
 const loginRouter = express.Router();
 
-loginRouter.post("/register", async (req, res, next) => {
+loginRouter.post("/signup", async (req, res, next) => {
   try {
     console.log(req.body);
     const newUser = new RegistrationModel(req.body);
@@ -19,8 +19,9 @@ loginRouter.post("/register", async (req, res, next) => {
 
 loginRouter.post("/", async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await RegistrationModel.findByCredentials(username, password);
+    console.log(req.body);
+    const { email, password } = req.body;
+    const user = await RegistrationModel.findByCredentials(email, password);
     const tokens = await authenticate(user);
     res.send(tokens);
   } catch (error) {
@@ -46,5 +47,17 @@ loginRouter.post("/refreshToken", async (req, res, next) => {
     }
   }
 });
+
+/*loginRouter.post("/logout", async (req, res, next) => {
+  try {
+    req.user.refreshTokens = req.user.refreshToken.filter(
+      (t) => t.token !== req.body.refreshToken
+    );
+    await req.user.save();
+    res.send();
+  } catch (err) {
+    next(err);
+  }
+});*/
 
 module.exports = loginRouter;
