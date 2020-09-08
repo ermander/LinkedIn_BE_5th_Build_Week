@@ -6,8 +6,34 @@ const postsRoutes = require("./posts");
 const experienceRoute = require("./experience");
 const commentRoutes = require("./comments");
 const loginRouter = require("./registration");
+const messagesRoute = require("./socketio/messagesRoute")
+const http = require("http")
+const socketio = require("socket.io")
+const { addMessage } = require("./socketio/addMessage")
 
+// Express server
 const server = express();
+
+// http server starting from express server
+const httpServer = http.createServer(server)
+
+// sockeio server
+const io = socketio(httpServer)
+
+// Waiting for a connection
+io.on("connection", (socket) => {
+  console.log(`New connection arrived: `, socket.id)   
+
+  // Send messages to private users
+  socket.on("privateMessage", async (options) => {
+    io.to(options.to).emit("privateMessage", {
+      from: options.from,
+      to: options.to,
+      text: options.text
+    })
+  })
+})
+
 const listEndpoints = require("express-list-endpoints");
 const profilesRouter = require("./profiles/index");
 const {
@@ -27,6 +53,7 @@ server.use("/profile", experienceRoute);
 server.use("/profile", profilesRouter);
 server.use("/comments", commentRoutes);
 server.use("/login", loginRouter);
+server.use("/messages", messagesRoute)
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);
@@ -34,13 +61,15 @@ server.use(genericErrorHandler);
 
 console.log(listEndpoints(server));
 
+
+const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING || 3003
 mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING, {
+  .connect(MONGO_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(
-    server.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log(`working on port ${port}`);
     })
   );
