@@ -7,8 +7,14 @@ const MessageSchema = new Schema(
       type: String,
       required: true,
     },
-    sender: String,
-    room: { type: String, ref: "Room" },
+    sender: {
+      type: String,
+      required: true
+    },
+    reciever: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 )

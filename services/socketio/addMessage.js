@@ -1,11 +1,11 @@
 const MessageModel = require("./schema")
 
-const addMessage = async (message, sender, room) => {
+const addMessage = async (text, sender, reciever) => {
     try {
         const newMessage = new MessageModel({
-            text: message, 
+            text: text, 
             sender,
-            room
+            reciever
         })
         const savedMessage = await newMessage.save()
         return savedMessage        
@@ -14,4 +14,4 @@ const addMessage = async (message, sender, room) => {
     }
 }
 
-module.exports = addMessage
+module.exports = { addMessage }
