@@ -5,6 +5,10 @@ const dotenv = require("dotenv");
 const postsRoutes = require("./posts");
 const experienceRoute = require("./experience");
 const commentRoutes = require("./comments");
+const routes = require("./app/routes");
+
+
+
 
 const server = express();
 const listEndpoints = require("express-list-endpoints");
@@ -25,6 +29,8 @@ server.use("/posts", postsRoutes);
 server.use("/profile", experienceRoute);
 server.use("/profile", profilesRouter);
 server.use("/comments", commentRoutes);
+server.use("/auth", routes);
+
 
 server.use(badRequestHandler);
 server.use(notFoundHandler);
@@ -45,5 +51,5 @@ mongoose
     })
   );
 mongoose.connection.on("connected", () => {
-  console.log("connected to atlas");
+  console.log("connected");
 });
