@@ -20,6 +20,16 @@ loginRouter.get("/", async (req, res, next) => {
   }
 });
 
+/*loginRouter.get("/:username", async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.params._id);
+    console.log(user);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});*/
+
 loginRouter.post("/signup", async (req, res, next) => {
   try {
     console.log(req.body);
