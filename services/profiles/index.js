@@ -1,6 +1,7 @@
 const express = require("express");
 const ProfilesSchema = require("./schema");
 const ExperienceSchema = require("../experience/schema");
+const RegistrationModel = require("../registration/schema")
 const profilesRouter = express.Router();
 const experienceModel = require("../experience/schema");
 const multer = require("multer");
@@ -102,6 +103,7 @@ profilesRouter.post("/", upload.single("image"), async (req, res, next) => {
 
     const newProfile = new ProfilesSchema(obj);
     await newProfile.save();
+
     res.send("ok");
   } catch (error) {
     next(error);

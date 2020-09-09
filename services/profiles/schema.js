@@ -26,6 +26,9 @@ const ProfilesSchema = new Schema(
     },
     isOnline: {
       type: Boolean
+    },
+    email: {
+      type: String
     }
   },
   { timestamps: true }
