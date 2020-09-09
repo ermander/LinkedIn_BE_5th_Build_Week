@@ -20,6 +20,13 @@ const ProfilesSchema = new Schema(
     image: {
       type: Buffer,
     },
+    socketID: {
+      type: String,
+      required: false
+    },
+    isOnline: {
+      type: Boolean
+    }
   },
   { timestamps: true }
 );
