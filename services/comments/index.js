@@ -1,6 +1,6 @@
 const express = require("express");
 const commentModel = require("./schema");
-const ProfilesModel = require("../profiles/schema");
+const UserModel = require("../registration/schema");
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.get("/:id", async (req, res) => {
 //POST a post
 router.post("/", async (req, res) => {
   console.log(req.headers.user);
-  const user = await ProfilesModel.findOne({ username: req.headers.user });
+  const user = await UserModel.findOne({ username: req.headers.user });
   // console.log(user);
   if (user) {
     const post = { ...req.body, username: req.headers.user, user };
