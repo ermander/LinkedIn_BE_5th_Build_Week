@@ -5,7 +5,7 @@ const { authorize } = require("../middlewares/authorize");
 const RegistrationModel = require("./schema");
 const loginRouter = express.Router();
 
-loginRouter.get("/", authorize, async (req, res, next) => {
+loginRouter.get("/", async (req, res, next) => {
   try {
     const query = q2m(req.query);
     const users = await RegistrationModel.find(
