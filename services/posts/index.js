@@ -3,7 +3,7 @@ const postModel = require("./schema");
 const multer = require("multer");
 const fs = require("fs-extra");
 const path = require("path");
-const ProfilesModel = require("../profiles/schema");
+const UserModel = require("../registration/schema");
 
 const router = express.Router();
 const upload = multer({});
@@ -28,8 +28,8 @@ router.get("/:id", async (req, res) => {
 //POST a post
 router.post("/", async (req, res) => {
   console.log(req.headers.user);
-  const user = await ProfilesModel.findOne({ username: req.headers.user });
-  // console.log(user);
+  const user = await UserModel.findOne({ username: req.headers.user });
+
   if (user) {
     const post = { ...req.body, username: req.headers.user, user };
     const file = await new postModel(post);

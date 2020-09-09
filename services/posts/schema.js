@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const ProfilesModel = require("../profiles/schema");
+const UserModel = require("../registration/schema");
 
 const postSchema = new Schema(
   {
@@ -10,7 +10,7 @@ const postSchema = new Schema(
     image: {
       type: Buffer,
     },
-    user: ProfilesModel.schema,
+    user: UserModel.schema,
   },
   { timestamps: true }
 );

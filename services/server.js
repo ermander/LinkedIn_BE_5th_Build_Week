@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
 });
 
 const listEndpoints = require("express-list-endpoints");
-const profilesRouter = require("./profiles/index");
+
 const {
   notFoundHandler,
   badRequestHandler,
@@ -50,7 +50,7 @@ server.use(express.json());
 server.use(cors());
 server.use("/posts", postsRoutes);
 server.use("/experience", experienceRoute);
-server.use("/profile", profilesRouter);
+
 server.use("/comments", commentRoutes);
 server.use("/user", userRouter);
 server.use("/messages", messagesRoute);
