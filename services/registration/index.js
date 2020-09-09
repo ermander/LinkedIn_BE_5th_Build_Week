@@ -15,6 +15,7 @@ loginRouter.get("/", async (req, res, next) => {
       .skip(query.options.skip)
       .limit(query.options.limit)
       .sort(query.options.sort);
+      
 
     res.send(users);
   } catch (error) {

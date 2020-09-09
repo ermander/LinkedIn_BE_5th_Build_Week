@@ -23,43 +23,8 @@ experienceRoute.post("/:userName/experience", async (req, res) => {
   await newExperience.save();
 
   res.status(201).send("ok");
-});
-// experienceRoute.get("/export/csv2/:id", async (req, res, next) => {
-//   try {
-//     const id = req.params.id;
-//     const experience = await ExperienceModel.find({ _id: req.params.id });
-
-//     const jsonReadableStream = fs.createReadStream(experience.toString());
-
-//     const json2csv = new Transform({
-//       fields: [
-//         "_id",
-//         "role",
-//         "company",
-//         "startDate",
-//         "endDate",
-//         "description",
-//         "area",
-//         "username",
-//         "createdAt",
-//         "updatedAt",
-//       ],
-//     });
-
-//     res.setHeader("Content-Disposition", "attachment; filename=export.csv");
-//     pump(jsonReadableStream, json2csv, res, (err) => {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         console.log("Done");
-//       }
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+})
 experienceRoute.get("/export/csv/:userName", async (req, res, next) => {
-  // try {
 
   const id = req.params.id;
   const experience = await ExperienceModel.find({

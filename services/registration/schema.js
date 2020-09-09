@@ -9,8 +9,8 @@ const RegistrationSchema = new Schema(
   {
     profile: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: Profile,
+        type: Schema.Types.ObjectId,
+        ref: "Profile",
       },
     ],
 
@@ -52,7 +52,7 @@ const RegistrationSchema = new Schema(
 
     experiences: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: Experience,
       },
     ],
