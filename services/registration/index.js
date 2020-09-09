@@ -2,16 +2,13 @@ const express = require("express");
 const { authenticate, refreshToken } = require("./authTools");
 const q2m = require("query-to-mongo");
 const { authorize } = require("../middlewares/authorize");
-const RegistrationModel = require("./schema");
+const UserModel = require("./schema");
 const loginRouter = express.Router();
 
 loginRouter.get("/", async (req, res, next) => {
   try {
     const query = q2m(req.query);
-    const users = await RegistrationModel.find(
-      query.criteria,
-      query.options.fields
-    )
+    const users = await UserModel.find(query.criteria, query.options.fields)
       .skip(query.options.skip)
       .limit(query.options.limit)
       .sort(query.options.sort);
@@ -27,7 +24,7 @@ loginRouter.get("/", async (req, res, next) => {
 loginRouter.post("/signup", async (req, res, next) => {
   try {
     console.log(req.body);
-    const newUser = new RegistrationModel(req.body);
+    const newUser = new UserModel(req.body);
     const { _id } = await newUser.save();
     console.log("user saved");
     res.status(201).send({ _id });
@@ -41,7 +38,7 @@ loginRouter.post("/login", async (req, res, next) => {
   try {
     console.log(req.body);
     const { email, password } = req.body;
-    const user = await RegistrationModel.findByCredentials(email, password);
+    const user = await UserModel.findByCredentials(email, password);
     const tokens = await authenticate(user);
     res.send(tokens);
   } catch (error) {
@@ -77,6 +74,15 @@ loginRouter.post("/logout", authorize, async (req, res, next) => {
     res.send();
   } catch (err) {
     next(err);
+  }
+});
+
+loginRouter.delete("/", authorize, async (req, res, next) => {
+  try {
+    await req.user.remove();
+    res.send("Deleted");
+  } catch (error) {
+    next(error);
   }
 });
 

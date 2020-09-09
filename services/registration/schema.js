@@ -3,16 +3,27 @@ const mongoose = require("mongoose");
 const brcrypt = require("bcryptjs");
 const v = require("validator");
 const Experience = require("../experience/schema");
-const Profile = require("../profiles/schema");
 
-const RegistrationSchema = new Schema(
+const UserSchema = new Schema(
   {
-    profile: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Profile",
-      },
-    ],
+    username: {
+      type: String,
+    },
+    name: {
+      type: String,
+    },
+    surname: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    area: {
+      type: String,
+    },
+    image: {
+      type: Buffer,
+    },
 
     email: {
       type: String,
@@ -69,7 +80,7 @@ const RegistrationSchema = new Schema(
   { timestamps: true }
 );
 
-RegistrationSchema.methods.toJSON = function () {
+UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
@@ -79,8 +90,8 @@ RegistrationSchema.methods.toJSON = function () {
   return userObject;
 };
 
-RegistrationSchema.statics.findByCredentials = async (email, password) => {
-  const user = await RegistrationModel.findOne({ email });
+UserSchema.statics.findByCredentials = async (email, password) => {
+  const user = await UserModel.findOne({ email });
   const isMatch = await brcrypt.compare(password, user.password);
   if (!isMatch) {
     const err = new Error("Unable to login");
@@ -90,7 +101,7 @@ RegistrationSchema.statics.findByCredentials = async (email, password) => {
   return user;
 };
 
-RegistrationSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
   const user = this;
 
   if (user.isModified("password")) {
@@ -100,7 +111,7 @@ RegistrationSchema.pre("save", async function (next) {
   next();
 });
 
-RegistrationSchema.post("validate", function (error, doc, next) {
+UserSchema.post("validate", function (error, doc, next) {
   if (error) {
     error.httpStatusCode = 400;
     next(error);
@@ -109,7 +120,7 @@ RegistrationSchema.post("validate", function (error, doc, next) {
   }
 });
 
-RegistrationSchema.post("save", function (error, doc, next) {
+UserSchema.post("save", function (error, doc, next) {
   if (error.name === "MongoError" && error.code === 11000) {
     error.httpStatusCode = 400;
     next(error);
@@ -118,6 +129,6 @@ RegistrationSchema.post("save", function (error, doc, next) {
   }
 });
 
-const RegistrationModel = mongoose.model("User", RegistrationSchema);
+const UserModel = mongoose.model("User", UserSchema);
 
-module.exports = RegistrationModel;
+module.exports = UserModel;

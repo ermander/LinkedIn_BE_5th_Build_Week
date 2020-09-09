@@ -1,31 +1,31 @@
 const express = require("express");
-const q2m = require("query-to-mongo");
 const ExperienceModel = require("./schema");
+const UserModel = require("../registration/schema");
 const e = require("express");
 const multer = require("multer");
 const upload = multer({});
 const fs = require("fs-extra");
 const path = require("path");
-const v = require("validator");
 const json2csv = require("json2csv").parse;
-const { Transform } = require("json2csv");
 
-const pump = require("pump");
 const experienceRoute = express.Router();
 
-experienceRoute.post("/:userName/experience", async (req, res) => {
-  console.log(req.params.userName);
+experienceRoute.post("/:id", async (req, res) => {
   const newExperience = new ExperienceModel({
     ...req.body,
-    username: req.params.userName,
   });
   console.log(newExperience);
+
   await newExperience.save();
 
-  res.status(201).send("ok");
-})
-experienceRoute.get("/export/csv/:userName", async (req, res, next) => {
+  const user = UserModel.findById(req.params.id);
 
+  user.experiences.push(newExperience._id);
+  await user.save();
+  res.status(201).send("ok");
+});
+
+experienceRoute.get("/export/csv/:userName", async (req, res, next) => {
   const id = req.params.id;
   const experience = await ExperienceModel.find({
     username: req.params.userName,
@@ -53,19 +53,7 @@ experienceRoute.get("/export/csv/:userName", async (req, res, next) => {
   res.status(200).send(csvString);
 });
 
-experienceRoute.get("/:userName/experience", async (req, res) => {
-  try {
-    const experience = await ExperienceModel.find({
-      username: req.params.userName,
-    });
-
-    res.send(experience);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-experienceRoute.get("/:userName/experience/:id", async (req, res) => {
+experienceRoute.get("/:id", async (req, res) => {
   try {
     const experience = await ExperienceModel.find({
       username: req.params.userName,
@@ -78,7 +66,7 @@ experienceRoute.get("/:userName/experience/:id", async (req, res) => {
   }
 });
 
-experienceRoute.put("/:userName/experience/:id", async (req, res) => {
+experienceRoute.put("/:id", async (req, res) => {
   const id = req.params.id;
   const experience = await ExperienceModel.findOneAndUpdate(
     { username: req.params.userName, _id: req.params.id },
@@ -91,7 +79,7 @@ experienceRoute.put("/:userName/experience/:id", async (req, res) => {
   }
 });
 
-experienceRoute.delete("/:userName/experience/:id", async (req, res) => {
+experienceRoute.delete("/:id", async (req, res) => {
   try {
     await ExperienceModel.findOneAndDelete({
       _id: req.params.id,
@@ -102,45 +90,41 @@ experienceRoute.delete("/:userName/experience/:id", async (req, res) => {
     console.log(error);
   }
 });
-experienceRoute.post(
-  "/:userName/experience/:id/image",
-  upload.single("image"),
-  async (req, res) => {
-    const imagesPath = path.join(__dirname, "/images");
-    await fs.writeFile(
+
+experienceRoute.post(":id/image", upload.single("image"), async (req, res) => {
+  const imagesPath = path.join(__dirname, "/images");
+  await fs.writeFile(
+    path.join(
+      imagesPath,
+      req.params.id + "." + req.file.originalname.split(".").pop()
+    ),
+    req.file.buffer
+  );
+
+  var obj = {
+    image: fs.readFileSync(
       path.join(
-        imagesPath,
-        req.params.id + "." + req.file.originalname.split(".").pop()
-      ),
-      req.file.buffer
-    );
+        __dirname +
+          "/images/" +
+          req.params.id +
+          "." +
+          req.file.originalname.split(".").pop()
+      )
+    ),
+  };
 
-    //
-    var obj = {
-      image: fs.readFileSync(
-        path.join(
-          __dirname +
-            "/images/" +
-            req.params.id +
-            "." +
-            req.file.originalname.split(".").pop()
-        )
-      ),
-    };
+  const experience = await ExperienceModel.findOneAndUpdate(
+    {
+      $and: [{ _id: req.params.id }, { username: req.params.userName }],
+    },
+    {
+      ...obj,
+    },
+    { new: true }
+  );
 
-    const experience = await ExperienceModel.findOneAndUpdate(
-      {
-        $and: [{ _id: req.params.id }, { username: req.params.userName }],
-      },
-      {
-        ...obj,
-      },
-      { new: true }
-    );
-
-    res.send("IMAGE UPLOADED");
-  }
-);
+  res.send("IMAGE UPLOADED");
+});
 
 experienceRoute.post("");
 module.exports = experienceRoute;

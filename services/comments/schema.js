@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const ProfilesModel = require("../profiles/schema");
+const UserModel = require("../registration/schema");
 
 const commentSchema = new Schema(
   {
@@ -8,7 +8,7 @@ const commentSchema = new Schema(
     },
     username: String,
     postId: String,
-    user: ProfilesModel.schema,
+    user: UserModel.schema,
   },
   { timestamps: true }
 );
