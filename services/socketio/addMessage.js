@@ -1,17 +1,18 @@
 const MessageModel = require("./schema")
+const { findOne } = require("../posts/schema")
 
-const addMessage = async (text, sender, reciever) => {
+const checkUser = async (fromToken, fromSocketID) => {
     try {
-        const newMessage = new MessageModel({
-            text: text, 
-            sender,
-            reciever
+        const user = await findOne({
+            fromToken: fromToken,
+            fromSocketID: fromSocketID
         })
-        const savedMessage = await newMessage.save()
-        return savedMessage        
+        if(user){
+            return user
+        }      
     } catch (error) {
         console.log(error)
     }
 }
 
-module.exports = { addMessage }
+module.exports = { checkUser }

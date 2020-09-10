@@ -76,7 +76,10 @@ const UserSchema = new Schema(
         },
       },
     ],
-  },
+    socketID: {
+      type: String
+    }
+  },  
   { timestamps: true }
 );
 

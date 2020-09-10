@@ -87,6 +87,10 @@ const verifyRefreshToken = (token) =>
       if (err) rej(err);
       res(decoded);
     })
-  );
+);
+
+// Login with linkedin
+
+
 
 module.exports = { authenticate, verifyJWT, refreshToken };
