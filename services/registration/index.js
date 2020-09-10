@@ -22,7 +22,9 @@ loginRouter.get("/", async (req, res, next) => {
 
 loginRouter.get("/:_id", async (req, res, next) => {
   try {
-    const user = await UserModel.findById(req.params._id);
+    const user = await UserModel.findById(req.params._id).populate(
+      "experiences"
+    );
     console.log(user);
     res.send(user);
   } catch (error) {

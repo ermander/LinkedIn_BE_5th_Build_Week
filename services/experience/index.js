@@ -18,7 +18,7 @@ experienceRoute.post("/:id", async (req, res) => {
 
   await newExperience.save();
 
-  const user = UserModel.findById(req.params.id);
+  const user = await UserModel.findById(req.params.id);
 
   user.experiences.push(newExperience._id);
   await user.save();
