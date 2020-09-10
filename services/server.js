@@ -13,7 +13,7 @@ const messagesRoute = require("./socketio/index")
 
 const http = require("http");
 const socketio = require("socket.io");
-const { addMessage } = require("./socketio/addMessage");
+const { saveMessages } = require("./socketio/saveMessages");
 
 // Express server
 const server = express();
@@ -28,20 +28,16 @@ const io = socketio(httpServer);
 io.on("connection", async (socket) => {
   console.log(`New connection arrived: `, socket.id);
 
-  // ricevi l'auth token
-  // capisci chi è l'utente
-  // salvi su db => ut ente.socketId
-  // broadcast emit della lista di utenti attivi
 
-  const { _id} = await verifyJWT(socket.handshake.query.token)
+  const { username } = await verifyJWT(socket.handshake.query.token)
   // Cerco l'utente che ha mandato il messaggio
-  await UserModel.findByIdAndUpdate(_id, {
+  await UserModel.findOneAndUpdate(username, {
      socketID: socket.id
   })
   // Send messages to private users
   socket.on("privateMessage", async (options) => {
   
-    const receiver = await UserModel.findById(options.to)
+    const receiver = await UserModel.findOne({ username: options.to})
     const receiverSocket = receiver.socketID
     const receiverObj = io.sockets.connected[receiverSocket]
     if (receiverObj){
@@ -49,7 +45,12 @@ io.on("connection", async (socket) => {
         options
       })
     }
-    // 1) salvo messaggio su DB  
+    
+    await saveMessages(
+      options.from,
+      options.to,
+      options.text
+    )
 
     io.to(options.to).emit("privateMessage", {
       from: options.from,

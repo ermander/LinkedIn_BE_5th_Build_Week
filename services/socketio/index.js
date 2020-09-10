@@ -1,17 +1,15 @@
 const express = require("express")
-const messagesRouter = express.Router()
-const UserModel = require("../registration/schema")
+const messagesRoute = express.Router()
+const MessageModel = require("./schema")
 
-messagesRouter.put("/", async(req, res, next) => {
+messagesRoute.get("/", async(req, res) => {
     try {
-        const user = await UserModel.findOneAndUpdate( fromToken, fromSocketID, {
-            fromToken: fromToken,
-            fromSocketID: fromSocketID
-        })
-        
+        const messages = await MessageModel.find()
+        console.log(messages)
+        res.send(messages)        
     } catch (error) {
         console.log(error)        
     }
-} )
+})
 
-module.exports = messagesRouter
+module.exports = messagesRoute

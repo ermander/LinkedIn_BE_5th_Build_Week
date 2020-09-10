@@ -1,17 +1,16 @@
-const { Schema } = require("mongoose")
-const mongoose = require("mongoose")
+const { Schema, model } = require("mongoose")
 
 const MessageSchema = new Schema(
   {
-    text: {
+    from: {
       type: String,
       required: true,
     },
-    sender: {
+    to: {
       type: String,
       required: true
     },
-    reciever: {
+    text: {
       type: String,
       required: true
     }
@@ -19,6 +18,6 @@ const MessageSchema = new Schema(
   { timestamps: true }
 )
 
-const MessageModel = mongoose.model("Message", MessageSchema)
+const MessageModel = model("Message", MessageSchema)
 
 module.exports = MessageModel
