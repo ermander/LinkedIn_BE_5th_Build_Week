@@ -76,6 +76,7 @@ const UserSchema = new Schema(
         },
       },
     ],
+    facebookId: String
   },
   { timestamps: true }
 );
