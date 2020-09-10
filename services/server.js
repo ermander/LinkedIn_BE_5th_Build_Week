@@ -33,48 +33,24 @@ io.on("connection", async (socket) => {
   // salvi su db => ut ente.socketId
   // broadcast emit della lista di utenti attivi
 
+  const { _id} = await verifyJWT(socket.handshake.query.token)
+  // Cerco l'utente che ha mandato il messaggio
+  await UserModel.findByIdAndUpdate(_id, {
+     socketID: socket.id
+  })
   // Send messages to private users
   socket.on("privateMessage", async (options) => {
-    await UserModel.findOneAndUpdate({
-      senderUsername: options.senderUsername
-    })
-    await UserModel.updateOne({
-      socketID: options.socketID
-    })
-    const userUpdated = await UserModel.findOne({
-      senderUsername: options.senderUsername
-    })
-    console.log("The userUdated socketID")
-    console.log(userUpdated.socketID)
-    
-
-   /*const query = {"senderUsername": options.senderUsername }
-   const update = {
-     "$set": {
-       "socketID": options.socketID
-      }
-   }
-   const option = { returnNewDocument: true }
-
-   return UserModel.findOneAndUpdate(query, update, option)
-   .then(updatedDocument => {
-    if(updatedDocument) {
-      console.log(`Successfully updated document: ${updatedDocument.socketID}.`)
-    } else {
-      console.log("No document matches the provided query.")
+  
+    const receiver = await UserModel.findById(options.to)
+    const receiverSocket = receiver.socketID
+    const receiverObj = io.sockets.connected[receiverSocket]
+    if (receiverObj){
+      receiverObj.emit("privateMessage", {
+        options
+      })
     }
-    return updatedDocument
-  })
-  .catch(err => console.error(`Failed to find and update document: ${err}`))
-  */
+    // 1) salvo messaggio su DB  
 
-    //to sarà un userId o uno username
-    //find sul db di quel userId o username
-    //SE ha un socket attivo (socjketId != null)
-    // emit di private message a sto socket
-    // salvi su db
-    //else
-    //salvei su DB
     io.to(options.to).emit("privateMessage", {
       from: options.from,
       to: options.to,
@@ -93,6 +69,7 @@ const {
   badRequestHandler,
   genericErrorHandler,
 } = require("./errorHandlers");
+const { verifyJWT } = require("./registration/authTools");
 
 dotenv.config();
 
