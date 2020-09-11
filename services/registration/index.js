@@ -13,7 +13,6 @@ loginRouter.get("/", async (req, res, next) => {
       .skip(query.options.skip)
       .limit(query.options.limit)
       .sort(query.options.sort);
-      
 
     res.send(users);
   } catch (error) {
@@ -24,15 +23,15 @@ loginRouter.get("/", async (req, res, next) => {
 
 loginRouter.get("/bytoken/:token", async (req, res, next) => {
   try {
-    const token = req.params.token
-    const { _id } = await verifyJWT(token)
-    const user = await UserModel.findById( _id )
-    res.send(user)
+    const token = req.params.token;
+    const { _id } = await verifyJWT(token);
+    const user = await UserModel.findById(_id);
+    res.send(user);
   } catch (error) {
-    console.log(error)
-    next(error)
+    console.log(error);
+    next(error);
   }
-})
+});
 
 loginRouter.get("/:_id", async (req, res, next) => {
   try {
@@ -102,7 +101,7 @@ loginRouter.post("/logout", authorize, async (req, res, next) => {
   }
 });
 
-loginRouter.delete("/me", authorize, async (req, res, next) => {
+loginRouter.delete("/:id", authorize, async (req, res, next) => {
   try {
     await req.user.remove();
     res.send("Deleted");
