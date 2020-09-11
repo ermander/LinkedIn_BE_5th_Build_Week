@@ -27,7 +27,7 @@ const UserSchema = new Schema(
 
     email: {
       type: String,
-      required: true,
+      required: false,
       lowercase: true,
       unique: true,
       validate: {
@@ -81,8 +81,11 @@ const UserSchema = new Schema(
     ],
     socketID: {
       type: String
-    }
-  },  
+    },
+    facebookId: { type: String },
+    linkedinId: { type: String }
+  },
+
   { timestamps: true }
 );
 

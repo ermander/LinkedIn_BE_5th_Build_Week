@@ -11,6 +11,8 @@ const path = require("path");
 const upload = multer({});
 const passport = require("passport");
 
+const passport = require("passport")
+
 loginRouter.get("/", async (req, res, next) => {
   try {
     const query = q2m(req.query);
@@ -136,10 +138,10 @@ loginRouter.put(
       image: fs.readFileSync(
         path.join(
           __dirname +
-            "/images/" +
-            req.params.id +
-            "." +
-            req.file.originalname.split(".").pop()
+          "/images/" +
+          req.params.id +
+          "." +
+          req.file.originalname.split(".").pop()
         )
       ),
     };
@@ -174,5 +176,23 @@ loginRouter.get(
     failureRedirect: "/login",
   })
 );
+loginRouter.get('/auth/facebook',
+  passport.authenticate('facebook')
+);
+
+loginRouter.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function (req, res) {
+    req.user.tokens
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+/* loginRouter.get('/auth/facebook', passport.authenticate('facebook', { scope: ["profile", "email"] }));
+
+loginRouter.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  })); */
 
 module.exports = loginRouter;
