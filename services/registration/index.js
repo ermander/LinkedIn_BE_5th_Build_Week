@@ -5,6 +5,7 @@ const { authorize } = require("../middlewares/authorize");
 const { verifyJWT } = require("./authTools");
 const UserModel = require("./schema");
 const loginRouter = express.Router();
+const passport = require("passport");
 
 loginRouter.get("/", async (req, res, next) => {
   try {
@@ -109,5 +110,22 @@ loginRouter.delete("/:id", authorize, async (req, res, next) => {
     next(error);
   }
 });
+
+loginRouter.get(
+  "/auth/linkedin",
+  passport.authenticate("linkedin", { state: "SOME STATE" }),
+  function (req, res) {
+    // The request will be redirected to LinkedIn for authentication, so this
+    // function will not be called.
+  }
+);
+
+loginRouter.get(
+  "/auth/linkedin/callback",
+  passport.authenticate("linkedin", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
 
 module.exports = loginRouter;
