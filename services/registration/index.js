@@ -33,6 +33,17 @@ loginRouter.get("/:token", async (req, res, next) => {
     next(error)
   }
 })
+loginRouter.get("/:_id", async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.params._id).populate(
+      "experiences"
+    );
+    console.log(user);
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+});
 
 loginRouter.post("/signup", async (req, res, next) => {
   try {
@@ -90,7 +101,7 @@ loginRouter.post("/logout", authorize, async (req, res, next) => {
   }
 });
 
-loginRouter.delete("/", authorize, async (req, res, next) => {
+loginRouter.delete("/me", authorize, async (req, res, next) => {
   try {
     await req.user.remove();
     res.send("Deleted");
