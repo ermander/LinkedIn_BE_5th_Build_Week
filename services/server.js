@@ -11,6 +11,8 @@ const http = require("http");
 const socketio = require("socket.io");
 const { addMessage } = require("./socketio/addMessage");
 
+const oauth = require("./registration/oauth")
+
 // Express server
 const server = express();
 

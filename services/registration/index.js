@@ -5,6 +5,8 @@ const { authorize } = require("../middlewares/authorize");
 const UserModel = require("./schema");
 const loginRouter = express.Router();
 
+const passport = require("passport")
+
 loginRouter.get("/", async (req, res, next) => {
   try {
     const query = q2m(req.query);
@@ -94,5 +96,16 @@ loginRouter.delete("/", authorize, async (req, res, next) => {
     next(error);
   }
 });
+
+loginRouter.get('/auth/facebook',
+  passport.authenticate('facebook')
+);
+
+loginRouter.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 
 module.exports = loginRouter;
