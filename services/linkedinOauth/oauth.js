@@ -1,6 +1,9 @@
 const LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
-const UserSchema = require("../registration/schema");
-const { authenticate } = require("../registration/authTools");
+const UserModel = require("../registration/schema");
+const { authenticate, generateJWT } = require("../registration/authTools");
+const { aggregate } = require("../registration/schema");
+const loginRouter = require("../registration");
+const passport = require("passport");
 
 passport.use(
   "linkedin",
@@ -12,25 +15,10 @@ passport.use(
       scope: ["r_emailaddress", "r_basicprofile"],
     },
     async (accessToken, refreshToken, profile, done) => {
-      const newUser = {
-        linkedinId: profile.id,
-        name: profile.name.givenName,
-        surname: profile.name.familyName,
-        email: profile.emails[0].value,
-        role: "user",
-        refreshTokens: [],
-      };
       try {
-        const user = await UserModel.findOne({ linkedinId: profile.id });
-
-        if (user) {
-          const tokens = await authenticate(user);
-          done(null, { user, tokens });
-        } else {
-          createdUser = await UserModel.create(newUser);
-          const tokens = await authenticate(createdUser);
-          done(null, { user, tokens });
-        }
+        const token = await generateJWT({});
+        console.log(token);
+        console.log("profile", profile);
       } catch (error) {
         console.log(error);
         done(error);
@@ -46,11 +34,3 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (user, done) {
   done(null, user);
 });
-
-app.get(
-  "/auth/linkedin/callback",
-  passport.authenticate("linkedin", {
-    successRedirect: "/",
-    failureRedirect: "/login",
-  })
-);
