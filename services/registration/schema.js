@@ -27,7 +27,7 @@ const UserSchema = new Schema(
 
     email: {
       type: String,
-      required: true,
+      required: false,
       lowercase: true,
       unique: true,
       validate: {
@@ -41,14 +41,14 @@ const UserSchema = new Schema(
 
     password: {
       type: String,
-      required: true,
+      required: false,
       minlength: 8,
     },
 
     role: {
       type: String,
       enum: ["user"],
-      required: true,
+      required: false,
     },
     age: {
       type: Number,
