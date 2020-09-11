@@ -104,6 +104,7 @@ loginRouter.get('/auth/facebook',
 loginRouter.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function (req, res) {
+    req.user.tokens
     // Successful authentication, redirect home.
     res.redirect('/');
   });

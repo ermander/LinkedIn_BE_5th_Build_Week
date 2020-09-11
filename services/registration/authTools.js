@@ -89,4 +89,4 @@ const verifyRefreshToken = (token) =>
     })
   );
 
-module.exports = { authenticate, verifyJWT, refreshToken };
+module.exports = { authenticate, verifyJWT, refreshToken, generateJWT };

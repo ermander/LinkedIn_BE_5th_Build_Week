@@ -11,6 +11,8 @@ const http = require("http");
 const socketio = require("socket.io");
 const { addMessage } = require("./socketio/addMessage");
 
+const passport = require("passport")
+
 const oauth = require("./registration/oauth")
 
 // Express server
@@ -49,7 +51,8 @@ dotenv.config();
 
 const port = process.env.PORT;
 server.use(express.json());
-
+server.use(passport.initialize());
+server.use(passport.session())
 
 server.use(cors());
 server.use("/posts", postsRoutes);
