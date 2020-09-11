@@ -107,5 +107,12 @@ loginRouter.get('/auth/facebook/callback',
     // Successful authentication, redirect home.
     res.redirect('/');
   });
+/* loginRouter.get('/auth/facebook', passport.authenticate('facebook', { scope: ["profile", "email"] }));
+
+loginRouter.get('/auth/facebook/callback',
+  passport.authenticate('facebook', {
+    successRedirect: '/',
+    failureRedirect: '/login'
+  })); */
 
 module.exports = loginRouter;

@@ -16,6 +16,7 @@ const oauth = require("./registration/oauth")
 // Express server
 const server = express();
 
+
 // http server starting from express server
 const httpServer = http.createServer(server);
 
@@ -49,6 +50,7 @@ dotenv.config();
 const port = process.env.PORT;
 server.use(express.json());
 
+
 server.use(cors());
 server.use("/posts", postsRoutes);
 server.use("/experience", experienceRoute);
@@ -60,6 +62,8 @@ server.use("/messages", messagesRoute);
 server.use(badRequestHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);
+
+
 
 console.log(listEndpoints(server));
 
