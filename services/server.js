@@ -16,8 +16,6 @@ const http = require("http");
 const socketio = require("socket.io");
 const { saveMessages } = require("./socketio/saveMessages");
 
-const passport = require("passport")
-
 const oauth = require("./registration/oauth")
 
 // Express server

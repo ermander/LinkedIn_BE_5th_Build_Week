@@ -11,8 +11,6 @@ const path = require("path");
 const upload = multer({});
 const passport = require("passport");
 
-const passport = require("passport")
-
 loginRouter.get("/", async (req, res, next) => {
   try {
     const query = q2m(req.query);
