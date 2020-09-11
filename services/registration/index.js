@@ -22,7 +22,7 @@ loginRouter.get("/", async (req, res, next) => {
   }
 });
 
-loginRouter.get("/:token", async (req, res, next) => {
+loginRouter.get("/bytoken/:token", async (req, res, next) => {
   try {
     const token = req.params.token
     const { _id } = await verifyJWT(token)
@@ -33,6 +33,7 @@ loginRouter.get("/:token", async (req, res, next) => {
     next(error)
   }
 })
+
 loginRouter.get("/:_id", async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.params._id).populate(
