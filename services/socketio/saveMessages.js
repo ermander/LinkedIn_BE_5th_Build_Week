@@ -1,10 +1,10 @@
 const MessageModel = require("./schema")
 
-const saveMessages = async(from, to, text) => {
+const saveMessages = async(senderId, recieverID, text) => {
     try {
         const newMessage = new MessageModel({
-            from: from,
-            to: to,
+            from: senderId,
+            to: recieverID,
             text: text
         })
 

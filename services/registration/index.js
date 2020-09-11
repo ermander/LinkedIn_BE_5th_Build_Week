@@ -2,6 +2,7 @@ const express = require("express");
 const { authenticate, refreshToken } = require("./authTools");
 const q2m = require("query-to-mongo");
 const { authorize } = require("../middlewares/authorize");
+const { verifyJWT } = require("./authTools");
 const UserModel = require("./schema");
 const loginRouter = express.Router();
 
@@ -20,6 +21,18 @@ loginRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+loginRouter.get("/:token", async (req, res, next) => {
+  try {
+    const token = req.params.token
+    const { _id } = await verifyJWT(token)
+    const user = await UserModel.findById( _id )
+    res.send(user)
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+})
 
 loginRouter.post("/signup", async (req, res, next) => {
   try {
