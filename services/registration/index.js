@@ -61,6 +61,7 @@ loginRouter.get("/byUsername/:username", async(req, res, next) => {
   }
 })
 
+// Implementare l'upload di un'immagine direttamente in fase di registrazione
 loginRouter.post("/signup", async (req, res, next) => {
   try {
     console.log(req.body);
