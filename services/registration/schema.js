@@ -60,7 +60,10 @@ const UserSchema = new Schema(
         }
       },
     },
-
+    image: {
+      type: Buffer,
+      required: false
+    },
     experiences: [
       {
         type: Schema.Types.ObjectId,

@@ -1,10 +1,14 @@
-const express = require("express");
-const { authenticate, refreshToken } = require("./authTools");
-const q2m = require("query-to-mongo");
-const { authorize } = require("../middlewares/authorize");
-const { verifyJWT } = require("./authTools");
-const UserModel = require("./schema");
-const loginRouter = express.Router();
+const express = require("express")
+const { authenticate, refreshToken } = require("./authTools")
+const q2m = require("query-to-mongo")
+const { authorize } = require("../middlewares/authorize")
+const { verifyJWT } = require("./authTools")
+const UserModel = require("./schema")
+const loginRouter = express.Router()
+const multer = require("multer")
+const fs = require("fs-extra")
+const path = require("path")
+const upload = multer({})
 
 loginRouter.get("/", async (req, res, next) => {
   try {
@@ -44,6 +48,18 @@ loginRouter.get("/:_id", async (req, res, next) => {
     next(error);
   }
 });
+
+loginRouter.get("/byUsername/:username", async(req, res, next) => {
+  try {
+    const user = await UserModel.findOne({username: req.params.username})
+    if(user){
+      res.send(user)
+    }
+  } catch (error) {
+    next(error)
+    console.log(error)
+  }
+})
 
 loginRouter.post("/signup", async (req, res, next) => {
   try {
@@ -100,6 +116,23 @@ loginRouter.post("/logout", authorize, async (req, res, next) => {
     next(err);
   }
 });
+
+loginRouter.put("/:id/uploadImage", upload.single("image"), async(req, res) => {
+  const imagesPath = path.join(__dirname, "/images")
+  await fs.writeFile(
+    path.join(imagesPath, req.params.id + "." + req.file.originalname.split(".").pop()),
+    req.file.buffer
+  );
+
+  var obj = {
+    image: fs.readFileSync(path.join(__dirname + "/images/" + req.params.id + "." + req.file.originalname.split(".").pop())
+    ),
+  };
+
+  await UserModel.findByIdAndUpdate(req.params.id, obj);
+  res.send("image added successfully");
+
+})
 
 loginRouter.delete("/:id", authorize, async (req, res, next) => {
   try {
