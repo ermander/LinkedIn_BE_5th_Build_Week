@@ -2,14 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const UserModel = require("./registration/schema")
+const passport = require("passport");
+const UserModel = require("./registration/schema");
 
 // Routes
 const postsRoutes = require("./posts");
 const experienceRoute = require("./experience");
 const commentRoutes = require("./comments");
 const userRouter = require("./registration");
-const messagesRoute = require("./socketio/index")
+const messagesRoute = require("./socketio/index");
 
 const http = require("http");
 const socketio = require("socket.io");
@@ -28,39 +29,33 @@ const io = socketio(httpServer);
 io.on("connection", async (socket) => {
   console.log(`New connection arrived: `, socket.id);
 
-
-  const {  _id } = await verifyJWT(socket.handshake.query.token)
+  const { _id } = await verifyJWT(socket.handshake.query.token);
   // Cerco l'utente che ha mandato il messaggio
-  await UserModel.findByIdAndUpdate( _id, {
-     socketID: socket.id
-  })
+  await UserModel.findByIdAndUpdate(_id, {
+    socketID: socket.id,
+  });
   // Send messages to private users
   socket.on("privateMessage", async (options) => {
-  
-    const receiver = await UserModel.find({ username: options.to})
-    const receiverSocket = receiver.socketID
-    const receiverObj = io.sockets.connected[receiverSocket]
-    if (receiverObj){
+    const receiver = await UserModel.find({ username: options.to });
+    const receiverSocket = receiver.socketID;
+    const receiverObj = io.sockets.connected[receiverSocket];
+    if (receiverObj) {
       receiverObj.emit("privateMessage", {
-        options
-      })
+        options,
+      });
     }
-    
+
     // Finding the sender id to save the sender message with his id
-    const findSenderId = await UserModel.findById({ _id:  _id })
-    const senderId = findSenderId._id   
-    console.log("This is the sender _id", senderId)
+    const findSenderId = await UserModel.findById({ _id: _id });
+    const senderId = findSenderId._id;
+    console.log("This is the sender _id", senderId);
 
     // Finding the reciever id to save the reciever message with his id
-    const findRecieverID = await UserModel.findOne({ username: options.to })    
-    const recieverID = findRecieverID._id
-    console.log("This is the reciever _id : " + findRecieverID._id)
-    
-    await saveMessages(
-      senderId,
-      recieverID,
-      options.text
-    )
+    const findRecieverID = await UserModel.findOne({ username: options.to });
+    const recieverID = findRecieverID._id;
+    console.log("This is the reciever _id : " + findRecieverID._id);
+
+    await saveMessages(senderId, recieverID, options.text);
 
     io.to(options.to).emit("privateMessage", {
       from: options.from,
