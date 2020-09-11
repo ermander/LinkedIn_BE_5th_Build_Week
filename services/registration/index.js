@@ -1,14 +1,15 @@
-const express = require("express")
-const { authenticate, refreshToken } = require("./authTools")
-const q2m = require("query-to-mongo")
-const { authorize } = require("../middlewares/authorize")
-const { verifyJWT } = require("./authTools")
-const UserModel = require("./schema")
-const loginRouter = express.Router()
-const multer = require("multer")
-const fs = require("fs-extra")
-const path = require("path")
-const upload = multer({})
+const express = require("express");
+const q2m = require("query-to-mongo");
+const { authenticate, refreshToken } = require("./authTools");
+const { authorize } = require("../middlewares/authorize");
+const { verifyJWT } = require("./authTools");
+const UserModel = require("./schema");
+const loginRouter = express.Router();
+const multer = require("multer");
+const fs = require("fs-extra");
+const path = require("path");
+const upload = multer({});
+const passport = require("passport");
 
 loginRouter.get("/", async (req, res, next) => {
   try {
@@ -49,17 +50,17 @@ loginRouter.get("/:_id", async (req, res, next) => {
   }
 });
 
-loginRouter.get("/byUsername/:username", async(req, res, next) => {
+loginRouter.get("/byUsername/:username", async (req, res, next) => {
   try {
-    const user = await UserModel.findOne({username: req.params.username})
-    if(user){
-      res.send(user)
+    const user = await UserModel.findOne({ username: req.params.username });
+    if (user) {
+      res.send(user);
     }
   } catch (error) {
-    next(error)
-    console.log(error)
+    next(error);
+    console.log(error);
   }
-})
+});
 
 loginRouter.post("/signup", async (req, res, next) => {
   try {
@@ -117,22 +118,35 @@ loginRouter.post("/logout", authorize, async (req, res, next) => {
   }
 });
 
-loginRouter.put("/:id/uploadImage", upload.single("image"), async(req, res) => {
-  const imagesPath = path.join(__dirname, "/images")
-  await fs.writeFile(
-    path.join(imagesPath, req.params.id + "." + req.file.originalname.split(".").pop()),
-    req.file.buffer
-  );
+loginRouter.put(
+  "/:id/uploadImage",
+  upload.single("image"),
+  async (req, res) => {
+    const imagesPath = path.join(__dirname, "/images");
+    await fs.writeFile(
+      path.join(
+        imagesPath,
+        req.params.id + "." + req.file.originalname.split(".").pop()
+      ),
+      req.file.buffer
+    );
 
-  var obj = {
-    image: fs.readFileSync(path.join(__dirname + "/images/" + req.params.id + "." + req.file.originalname.split(".").pop())
-    ),
-  };
+    var obj = {
+      image: fs.readFileSync(
+        path.join(
+          __dirname +
+            "/images/" +
+            req.params.id +
+            "." +
+            req.file.originalname.split(".").pop()
+        )
+      ),
+    };
 
-  await UserModel.findByIdAndUpdate(req.params.id, obj);
-  res.send("image added successfully");
-
-})
+    await UserModel.findByIdAndUpdate(req.params.id, obj);
+    res.send("image added successfully");
+  }
+);
 
 loginRouter.delete("/:id", authorize, async (req, res, next) => {
   try {
@@ -142,5 +156,22 @@ loginRouter.delete("/:id", authorize, async (req, res, next) => {
     next(error);
   }
 });
+
+loginRouter.get(
+  "/auth/linkedin",
+  passport.authenticate("linkedin", { state: "SOME STATE" }),
+  function (req, res) {
+    // The request will be redirected to LinkedIn for authentication, so this
+    // function will not be called.
+  }
+);
+
+loginRouter.get(
+  "/auth/linkedin/callback",
+  passport.authenticate("linkedin", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
 
 module.exports = loginRouter;
